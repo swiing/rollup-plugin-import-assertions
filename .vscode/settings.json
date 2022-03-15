@@ -1,0 +1,4 @@
+// derived from https://github.com/rollup/plugins/blob/master/.vscode/settings.json
+{
+  "eslint.enable": true
+}

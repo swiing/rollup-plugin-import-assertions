@@ -7,6 +7,14 @@
   "author": "swiing",
   "homepage": "https://github.com/swiing/rollup-plugin-import-assertions#readme",
   "bugs": "https://github.com/swiing/rollup-plugin-import-assertions/issues",
+  "scripts": {
+    "lint": "pnpm lint:docs && pnpm lint:package && pnpm lint:js",
+    "lint:docs": "prettier --write README.md",
+    "lint:js": "eslint --cache src --ext .js",
+    "lint:package": "prettier --write **/package.json",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check ."
+  },
   "keywords": [
     "rollup",
     "plugin",
@@ -16,5 +24,18 @@
     "import assertions",
     "json",
     "css"
-  ]
+  ],
+  "peerDependencies": {
+    "rollup": "^2.0.0"
+  },
+  "dependencies": {
+    "@rollup/pluginutils": "^4.2.0"
+  },
+  "devDependencies": {
+    "ava": "^4.1.0",
+    "eslint-config-rollup": "^2.0.4",
+    "pnpm": "^6.32.3",
+    "prettier": "^2.5.1",
+    "prettier-plugin-package": "^1.3.0"
+  }
 }
