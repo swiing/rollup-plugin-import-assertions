@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@rollup/pluginutils": "^4.2.0",
-    "acorn-import-assertions": "^1.8.0",
+    "acorn-import-assertions": "github:swiing/acorn-import-assertions",
     "estree-walker": "^2.0.2"
   },
   "devDependencies": {
