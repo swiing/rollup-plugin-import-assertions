@@ -1,4 +1,136 @@
 /**
  * copyright 2022 swiing
  * SPDX-License-Identifier: MIT
- */ 
+ */
+
+import { importAssertions as acornImportAssertions } from 'acorn-import-assertions';
+import { createFilter, dataToEsm } from '@rollup/pluginutils';
+import { walk } from 'estree-walker';
+
+import convert from './convert';
+
+// Implementation principle:
+//
+// When a module is processed, we look for import assertions;
+// for each one found, we attach a meta information to the corresponding module.
+// When a module is transformed, we check for the meta information;
+// if present, we transform accordingly.
+//
+// Supported meta information is "json" and "css".
+
+// options are same as for @rollup/plugin-json
+// see https://github.com/rollup/plugins/tree/master/packages/json
+export default function importAssertions(options = {}) {
+  const filter = createFilter(options.include, options.exclude);
+  const indent = 'indent' in options ? options.indent : '\t';
+
+  return {
+    name: 'import-assertions',
+
+    // we want to make sure acorn knows how to parse import assertions
+
+    // The acorn parser only implements stage 4 js proposals.
+    // At the moment "import assertions" are a stage 3 proposal and as such
+    // cannot be parsed by acorn. However, there exist a plugin,
+    // so we inject the adhoc plugin into the options
+    // by leveraging https://rollupjs.org/guide/en/#acorninjectplugins
+    options(opts) {
+      // eslint-disable-next-line no-param-reassign
+      opts.acornInjectPlugins = opts.acornInjectPlugins || [];
+      if (!opts.acornInjectPlugins.includes(acornImportAssertions)) {
+        opts.acornInjectPlugins.push(acornImportAssertions);
+      }
+      return opts;
+    },
+
+    async transform(inputCode, id) {
+      if (!filter(id)) return null;
+
+      const self = this;
+      const { 'import-assertions': assertType } = this.getModuleInfo(id).meta;
+
+      if (assertType === 'json')
+        // from @rollup/plugin-json
+        try {
+          const parsed = JSON.parse(inputCode);
+          const code = dataToEsm(parsed, {
+            preferConst: options.preferConst,
+            compact: options.compact,
+            namedExports: options.namedExports,
+            indent
+          });
+          return {
+            code,
+            map: { mappings: '' }
+          };
+        } catch (err) {
+          const message = 'Could not parse JSON file';
+          const position = parseInt(/[\d]/.exec(err.message)[0], 10);
+          this.warn({ message, id, position });
+          return null;
+        }
+      else if (assertType === 'css') {
+        const code = `const sheet = new CSSStyleSheet();
+try {
+  sheet.replaceSync(${convert(inputCode)});
+} catch(err) {
+  console.error('replaceSync() is not supported in your environment. Please consider a polyfill, e.g. https://www.npmjs.com/package/construct-style-sheets-polyfill')
+}
+export default sheet;`;
+        return {
+          code,
+          map: { mappings: '' }
+        };
+      }
+
+      // else assume some sort of js
+      const declarations = [];
+      let ast;
+      try {
+        ast = this.parse(inputCode);
+        walk(ast, {
+          enter(node) {
+            if (
+              ['ImportDeclaration', 'ExportNamedDeclaration'].includes(node.type) &&
+              node.assertions
+            ) {
+              // As per https://github.com/xtuc/acorn-import-assertions/blob/main/src/index.js#L167
+              // an import assertions node has (amongst others):
+              // - a source node, whose value is the path
+              const sourceNode = node.source;
+              // - an (array of) assertions node, whose value is a Literal node, whose value is the type (i.e. "json"|"css")
+              const literalNode = node.assertions[0].value;
+              declarations.push({ source: sourceNode.value, type: literalNode.value });
+            }
+          }
+        });
+      } catch (err) {
+        return null;
+      }
+
+      // attach meta information to the module
+      // Note: it is important to await here: this makes sure rollup does not process imports
+      // before the meta info is attached to the modules (by means of rollup waiting
+      // the transform() hook to resolve before processing imports)
+      // https://rollupjs.org/guide/en/#build-hooks
+      await Promise.all(
+        declarations.map(async ({ source, type }) => {
+          const meta = { 'import-assertions': type };
+          const resolvedId = await self.resolve(source, id);
+
+          const moduleInfo = this.getModuleInfo(resolvedId.id);
+          // case where the module has not been loaded yet.
+          if (!moduleInfo) {
+            self.load({ id: resolvedId.id, meta });
+          }
+          // case where the module has already been loaded (e.g. by another plugin)
+          else {
+            moduleInfo.meta = { ...moduleInfo.meta, ...meta };
+          }
+        })
+      );
+
+      return null;
+    }
+  };
+}
