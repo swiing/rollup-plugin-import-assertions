@@ -70,11 +70,12 @@ export default function importAssertions(options = {}) {
           return null;
         }
       else if (assertType === 'css') {
-        const code = `const sheet = new CSSStyleSheet();
+        const code = `let sheet;
 try {
+  sheet = new CSSStyleSheet()
   sheet.replaceSync(${convert(inputCode)});
 } catch(err) {
-  console.error('replaceSync() is not supported in your environment. Please consider a polyfill, e.g. https://www.npmjs.com/package/construct-style-sheets-polyfill')
+  console.error('Constructable Stylesheets are not supported in your environment. Please consider a polyfill, e.g. https://www.npmjs.com/package/construct-style-sheets-polyfill')
 }
 export default sheet;`;
         return {
