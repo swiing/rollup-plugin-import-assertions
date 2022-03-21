@@ -31,7 +31,7 @@ With an accompanying file `src/index.js`, the local `package.json` file would no
 
 ```js
 // src/index.js
-import pkg from './package.json' assert { type: 'json' };
+import pkg from '../package.json' assert { type: 'json' };
 console.log(`running version ${pkg.version}`);
 ```
 
