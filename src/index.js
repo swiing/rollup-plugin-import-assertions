@@ -119,6 +119,8 @@ export default sheet;`;
           const meta = { 'import-assertions': type };
           const resolvedId = await self.resolve(source, id);
 
+          if (resolvedId.external) return;
+
           const moduleInfo = this.getModuleInfo(resolvedId.id);
           // case where the module has not been loaded yet.
           if (!moduleInfo) {
