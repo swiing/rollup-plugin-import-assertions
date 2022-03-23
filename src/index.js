@@ -23,6 +23,7 @@ import convert from './convert';
 export default function importAssertions(options = {}) {
   const filter = createFilter(options.include, options.exclude);
   const indent = 'indent' in options ? options.indent : '\t';
+  const treatAsExternal = [];
 
   return {
     name: 'import-assertions',
@@ -41,6 +42,14 @@ export default function importAssertions(options = {}) {
         opts.acornInjectPlugins.push(acornImportAssertions);
       }
       return opts;
+    },
+
+    resolveId(source, importer) {
+      if (importer in treatAsExternal && treatAsExternal[importer].has(source)) {
+        this.warn(`treating ${source} as an external dependency`);
+        return false;
+      }
+      return null;
     },
 
     async transform(inputCode, id) {
@@ -119,6 +128,12 @@ export default sheet;`;
           const meta = { 'import-assertions': type };
           const resolvedId = await self.resolve(source, id);
 
+          if (!resolvedId) {
+            this.warn('Unresolved dependencies');
+            if (!(id in treatAsExternal)) treatAsExternal[id] = new Set();
+            treatAsExternal[id].add(source);
+            return;
+          }
           if (resolvedId.external) return;
 
           const moduleInfo = this.getModuleInfo(resolvedId.id);
