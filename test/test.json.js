@@ -76,11 +76,6 @@ test('handles JSON objects with no valid keys (#19)', async (t) => {
   return testBundle(t, bundle);
 });
 
-// This passes, however it has 1 unhandled rejection
-// which triggers in rollup/dist/shared/rollup.js line 12803 TryParse()
-// which will indeed fail to parse a wrong json file.
-// This is fine but how comes the rollup-plugin-json does not trigger
-// this code? Probably due to the asynch nature of the code. To be checked...
 test('handles garbage', async (t) => {
   const warns = [];
 
