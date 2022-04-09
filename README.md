@@ -45,7 +45,7 @@ class MyElement extends HTMLElement {
   constructor() {
     super();
     const root = this.attachShadow({ mode: 'open' });
-    root.adoptedStyleSheets = [ styles ];
+    root.adoptedStyleSheets = [styles];
     root.innerHTML = `<div>My custom element</div>`;
   }
 }
@@ -108,6 +108,10 @@ If `true`, instructs the plugin to declare properties as variables, using either
 Credits to:
 
 - [@rollup/plugin-json](https://github.com/rollup/plugins/tree/master/packages/json/),
-on top of which this plugin shamelessly builds.
+  on top of which this plugin shamelessly builds.
 
 - [rollup-plugin-import-assert](https://github.com/calebdwilliams/rollup-plugin-import-assert) which was inspirational to start with.
+
+## License
+
+![license](https://img.shields.io/github/license/swiing/rollup-plugin-import-assertions)
