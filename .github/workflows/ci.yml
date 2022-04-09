@@ -7,13 +7,12 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -22,30 +21,30 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-    # From https://github.com/rollup/plugins/blob/master/.github/workflows/validate.yml
+      # From https://github.com/rollup/plugins/blob/master/.github/workflows/validate.yml
 
-    - name: Install pnpm
-      run: npm install pnpm -g
+      - name: Install pnpm
+        run: npm install pnpm -g
 
-    - name: Sanity Check
-      run: |
-        echo branch `git branch --show-current`;
-        echo node `node --version`;
-        echo yarn `pnpm --version`
+      - name: Sanity Check
+        run: |
+          echo branch `git branch --show-current`;
+          echo node `node --version`;
+          echo yarn `pnpm --version`
 
-    - name: pnpm install
-      run: pnpm install
+      - name: pnpm install
+        run: pnpm install
 
-    # pnpm audit isn't as robust as it needs to be atm
-    # - name: Audit Dependencies
-    #   run: pnpm security
+      # pnpm audit isn't as robust as it needs to be atm
+      # - name: Audit Dependencies
+      #   run: pnpm security
 
-    - run: pnpm run build --if-present
-    - run: pnpm test
+      - run: pnpm run build --if-present
+      - run: pnpm test
