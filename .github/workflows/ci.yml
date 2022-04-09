@@ -28,6 +28,24 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+
+    # From https://github.com/rollup/plugins/blob/master/.github/workflows/validate.yml
+
+    - name: Install pnpm
+      run: npm install pnpm -g
+
+    - name: Sanity Check
+      run: |
+        echo branch `git branch --show-current`;
+        echo node `node --version`;
+        echo yarn `pnpm --version`
+
+    - name: pnpm install
+      run: pnpm install
+
+    # pnpm audit isn't as robust as it needs to be atm
+    # - name: Audit Dependencies
+    #   run: pnpm security
+
+    - run: pnpm run build --if-present
+    - run: pnpm test
