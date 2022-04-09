@@ -139,12 +139,13 @@ export default sheet;`;
           const moduleInfo = this.getModuleInfo(resolvedId.id);
           // case where the module has not been loaded yet.
           if (!moduleInfo) {
-            self.load({ id: resolvedId.id, meta })
-            // errors parsing the file are already captured, so don't repeat error
-            // https://github.com/rollup/rollup/blob/275dc2fa34e1aaad37a29360570dc85b1ba019a6/src/Module.ts#L837
-            // Question: could it be though that load() rejects for an error type
-            // other than parsing?
-            .catch(()=>{});
+            self
+              .load({ id: resolvedId.id, meta })
+              // errors parsing the file are already captured, so don't repeat error
+              // https://github.com/rollup/rollup/blob/275dc2fa34e1aaad37a29360570dc85b1ba019a6/src/Module.ts#L837
+              // Question: could it be though that load() rejects for an error type
+              // other than parsing?
+              .catch(() => {});
           }
           // case where the module has already been loaded (e.g. by another plugin)
           else {
