@@ -8,6 +8,14 @@ Two types of assertions are supported: `json` and `css`.
 
 Currently, dynamic imports are not supported (PR welcomed).
 
+## Install
+
+Using npm:
+
+```console
+npm install rollup-plugin-import-assertions --save-dev
+```
+
 ## Usage
 
 Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
