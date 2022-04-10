@@ -1,5 +1,20 @@
 # rollup-plugin-import-assertions ChangeLog
 
+## v0.3.0
+
+_2022-04-10_
+
+### Updates
+
+- chore: add eslint
+- chore: add prettier
+- chore: add validation ci
+
+### Bugfixes
+
+- fix: handle promise rejection
+- fix: dependency vulnerability
+
 ## v0.2.0
 
 _2022-03-23_
