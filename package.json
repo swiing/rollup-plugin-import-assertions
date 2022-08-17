@@ -38,7 +38,7 @@
     "css"
   ],
   "peerDependencies": {
-    "rollup": "^2.0.0"
+    "rollup": "^2.60.0"
   },
   "dependencies": {
     "@rollup/pluginutils": "^4.2.0",
