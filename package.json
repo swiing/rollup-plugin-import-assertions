@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-import-assertions",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Bundles TC39 import assertions",
   "license": "MIT",
   "repository": "swiing/rollup-plugin-import-assertions",
