@@ -10,7 +10,7 @@
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c --bundleConfigAsCjs",
     "lint": "pnpm lint:docs && pnpm lint:package && pnpm lint:js",
     "lint:docs": "prettier --write README.md",
     "lint:js": "eslint --cache src --ext .js",
