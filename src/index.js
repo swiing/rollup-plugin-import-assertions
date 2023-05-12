@@ -140,7 +140,9 @@ export default sheet;`;
           // case where the module has not been loaded yet.
           if (!moduleInfo) {
             self
-              .load({ id: resolvedId.id, meta })
+              // {meta} is used by this plugin to track the assertion type
+              // {assertions} is used by rollup v3 for the same purpose
+              .load({ id: resolvedId.id, meta, assertions: { type } })
               // errors parsing the file are already captured, so don't repeat error
               // https://github.com/rollup/rollup/blob/275dc2fa34e1aaad37a29360570dc85b1ba019a6/src/Module.ts#L837
               // Question: could it be though that load() rejects for an error type
