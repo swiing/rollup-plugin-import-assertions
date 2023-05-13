@@ -1,5 +1,18 @@
 # rollup-plugin-import-assertions ChangeLog
 
+## v0.5.0
+
+_2023-05-13_
+
+### Features
+
+- feat: add support for rollup v3
+
+### Updates
+
+- chore: update dependencies
+- chore: drop node.js v14 support
+
 ## v0.4.0
 
 _2022-08-18_
