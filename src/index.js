@@ -12,9 +12,13 @@ import convert from './convert';
 // Implementation principle:
 //
 // When a module is processed, we look for import assertions;
-// for each one found, we attach a meta information to the corresponding module.
-// When a module is transformed, we check for the meta information;
+// for each one found, we attach adhoc information to the corresponding module.
+// When a module is transformed, we check for such adhoc information;
 // if present, we transform accordingly.
+//
+// In rollup v2, adhoc information is set/found in `meta: { 'import-assertions': <type> }`
+// In rollup v3, there is some support of import assertions, so we leverage this.
+// In that case, adhoc information is set/found in `assertions : { type: <type> }`
 //
 // Supported meta information is "json" and "css".
 
@@ -56,7 +60,12 @@ export default function importAssertions(options = {}) {
       if (!filter(id)) return null;
 
       const self = this;
-      const { 'import-assertions': assertType } = this.getModuleInfo(id).meta;
+
+      const moduleInfo = self.getModuleInfo(id);
+      const assertType =
+        'assertions' in moduleInfo
+          ? moduleInfo.assertions.type /* rollup v3 */
+          : moduleInfo.meta['import-assertions'];
 
       if (assertType === 'json')
         // from @rollup/plugin-json
@@ -125,8 +134,8 @@ export default sheet;`;
       // https://rollupjs.org/guide/en/#build-hooks
       await Promise.all(
         declarations.map(async ({ source, type }) => {
-          const meta = { 'import-assertions': type };
-          const resolvedId = await self.resolve(source, id);
+          // { assertions } is used by rollup v3 (ignored by rollup v2)
+          const resolvedId = await self.resolve(source, id, { assertions: { type } });
 
           if (!resolvedId) {
             this.warn('Unresolved dependencies');
@@ -136,13 +145,12 @@ export default sheet;`;
           }
           if (resolvedId.external) return;
 
+          const meta = { 'import-assertions': type };
           const moduleInfo = this.getModuleInfo(resolvedId.id);
           // case where the module has not been loaded yet.
           if (!moduleInfo) {
             self
-              // {meta} is used by this plugin to track the assertion type
-              // {assertions} is used by rollup v3 for the same purpose
-              .load({ id: resolvedId.id, meta, assertions: { type } })
+              .load({ ...resolvedId, meta })
               // errors parsing the file are already captured, so don't repeat error
               // https://github.com/rollup/rollup/blob/275dc2fa34e1aaad37a29360570dc85b1ba019a6/src/Module.ts#L837
               // Question: could it be though that load() rejects for an error type
