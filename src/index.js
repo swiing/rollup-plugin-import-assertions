@@ -34,17 +34,23 @@ export default function importAssertions(options = {}) {
 
     // we want to make sure acorn knows how to parse import assertions
 
-    // The acorn parser only implements stage 4 js proposals.
+    // For rollup v2 or v2,
+    // the acorn parser only implements stage 4 js proposals.
     // At the moment "import assertions" are a stage 3 proposal and as such
     // cannot be parsed by acorn. However, there exist a plugin,
     // so we inject the adhoc plugin into the options
     // by leveraging https://rollupjs.org/guide/en/#acorninjectplugins
     options(opts) {
-      // eslint-disable-next-line no-param-reassign
-      opts.acornInjectPlugins = opts.acornInjectPlugins || [];
-      if (!opts.acornInjectPlugins.includes(acornImportAssertions)) {
-        opts.acornInjectPlugins.push(acornImportAssertions);
+      const rollupMajorVersion = Number(this.meta.rollupVersion.split('.')[0]);
+
+      if (rollupMajorVersion <= 3) {
+        // eslint-disable-next-line no-param-reassign
+        opts.acornInjectPlugins = opts.acornInjectPlugins || [];
+        if (!opts.acornInjectPlugins.includes(acornImportAssertions)) {
+          opts.acornInjectPlugins.push(acornImportAssertions);
+        }
       }
+
       return opts;
     },
 
@@ -63,9 +69,11 @@ export default function importAssertions(options = {}) {
 
       const moduleInfo = self.getModuleInfo(id);
       const assertType =
-        'assertions' in moduleInfo
+        'attributes' in moduleInfo
+          ? moduleInfo.attributes.type /* rollup v4 */
+          : 'assertions' in moduleInfo
           ? moduleInfo.assertions.type /* rollup v3 */
-          : moduleInfo.meta['import-assertions'];
+          : moduleInfo.meta['import-assertions']; /* rollup v<=2 */
 
       if (assertType === 'json')
         // from @rollup/plugin-json
