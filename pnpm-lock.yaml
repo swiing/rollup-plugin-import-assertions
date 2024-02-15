@@ -14,9 +14,9 @@ dependencies:
   acorn:
     specifier: ^8.8.2
     version: 8.8.2
-  acorn-import-attributes:
-    specifier: ^1.9.2
-    version: 1.9.2(acorn@8.8.2)
+  acorn-import-assertions:
+    specifier: git+http://github.com/swiing/acorn-import-assertions.git
+    version: github.com/swiing/acorn-import-assertions/b941e5ae5065690654c0732c5eeaebe89318d2ac(acorn@8.8.2)
   estree-walker:
     specifier: ^2.0.2
     version: 2.0.2
@@ -981,14 +981,6 @@ packages:
       '@typescript-eslint/types': 5.59.5
       eslint-visitor-keys: 3.4.1
     dev: true
-
-  /acorn-import-attributes@1.9.2(acorn@8.8.2):
-    resolution: {integrity: sha512-O+nfJwNolEA771IYJaiLWK1UAwjNsQmZbTRqqwBYxCgVQTmpFEMvBw6LOIQV0Me339L5UMVYFyRohGnGlQDdIQ==}
-    peerDependencies:
-      acorn: ^8
-    dependencies:
-      acorn: 8.8.2
-    dev: false
 
   /acorn-jsx@5.3.2(acorn@7.4.1):
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -4412,3 +4404,14 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
+
+  github.com/swiing/acorn-import-assertions/b941e5ae5065690654c0732c5eeaebe89318d2ac(acorn@8.8.2):
+    resolution: {commit: b941e5ae5065690654c0732c5eeaebe89318d2ac, repo: http://github.com/swiing/acorn-import-assertions.git, type: git}
+    id: github.com/swiing/acorn-import-assertions/b941e5ae5065690654c0732c5eeaebe89318d2ac
+    name: acorn-import-assertions
+    version: 1.7.6
+    peerDependencies:
+      acorn: ^8
+    dependencies:
+      acorn: 8.8.2
+    dev: false

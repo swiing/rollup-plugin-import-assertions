@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-import { importAssertions as acornImportAssertions } from 'acorn-import-attributes';
+import { importAssertions as acornImportAssertions } from 'acorn-import-assertions';
 import { createFilter, dataToEsm } from '@rollup/pluginutils';
 import { walk } from 'estree-walker';
 
